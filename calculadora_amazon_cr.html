@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora Amazon CR</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #F2F2F7;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-blur {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ios-shadow {
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+        }
+        .ios-inset-shadow {
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Custom transitions */
+        .tab-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-6">
+
+    <!-- DISPOSITIVO MÓVIL CONTENEDOR (Simulador iPhone de alta gama) -->
+    <div class="bg-[#F2F2F7] w-full max-w-md sm:rounded-[48px] sm:h-[850px] h-screen flex flex-col justify-between overflow-hidden relative sm:border-[8px] sm:border-[#1C1C1E] ios-shadow">
+        
+        <!-- BARRA DE ESTADO SIMULADA (Para estética de iPhone) -->
+        <div class="hidden sm:flex justify-between items-center px-8 pt-3 pb-2 text-xs font-semibold text-gray-900 select-none bg-[#F2F2F7]">
+            <span id="device-time">9:41</span>
+            <!-- Isla Dinámica Pequeña -->
+            <div class="w-28 h-4 bg-black rounded-full absolute left-1/2 transform -translate-x-1/2 top-2"></div>
+            <div class="flex items-center space-x-1.5">
+                <!-- Señal -->
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v3H2zm4-4h2v7H6zm4-4h2v11h-2zm4-4h2v15h-2zm4-4h2v19h-2z"/></svg>
+                <!-- Wifi -->
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM4.8 12.5a10 10 0 0 1 14.4 0l-1.4 1.4a8 8 0 0 0-11.6 0l-1.4-1.4zm2.9-2.9a6 6 0 0 1 8.6 0l-1.4 1.4a4 4 0 0 0-5.8 0L7.7 9.6z"/></svg>
+                <!-- Batería -->
+                <div class="w-5 h-2.5 border border-current rounded-sm p-0.5 flex items-center"><div class="bg-current h-full w-3.5 rounded-2xs"></div></div>
+            </div>
+        </div>
+
+        <!-- ÁREA DE CONTENIDO (Scrollable) -->
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 pb-24">
+            
+            <!-- ================= SECCIÓN 1: INICIO (DASHBOARD) ================= -->
+            <div id="tab-inicio" class="tab-content space-y-6">
+                <div class="flex justify-between items-center pt-2">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Resumen de Cuenta</p>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">¡Hola de nuevo!</h1>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        AZ
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Último Cálculo -->
+                <div class="bg-gradient-to-br from-[#1C1C1E] to-[#2C2C2E] rounded-3xl p-6 text-white ios-shadow relative overflow-hidden">
+                    <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-4 translate-y-4">
+                        <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/></svg>
+                    </div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Última Quincena Calculada</p>
+                    <h2 class="text-4xl font-extrabold mt-2 tracking-tight" id="dash-net-pay">₡0</h2>
+                    <p class="text-xs text-green-400 font-medium mt-1">✓ Desglose listo y optimizado</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-gray-800">
+                        <div>
+                            <p class="text-[10px] uppercase text-gray-500 font-bold">Salario Bruto</p>
+                            <p class="text-sm font-semibold text-gray-200" id="dash-gross-pay">₡0</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase text-gray-500 font-bold">Deducciones</p>
+                            <p class="text-sm font-semibold text-red-400" id="dash-deductions">₡0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accesos Rápidos -->
+                <div class="space-y-3">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">Acciones Rápidas</h3>
+                    <button onclick="changeTab('calcular')" class="w-full bg-white hover:bg-gray-50 rounded-2xl p-4 flex items-center justify-between ios-shadow transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-900 text-sm">Nuevo cálculo quincenal</p>
+                                <p class="text-xs text-gray-500">Ingresa horas extra, feriados y boot</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </button>
+
+                    <button onclick="changeTab('historial')" class="w-full bg-white hover:bg-gray-50 rounded-2xl p-4 flex items-center justify-between ios-shadow transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-900 text-sm">Ver Historial</p>
+                                <p class="text-xs text-gray-500">Consulta tus registros guardados</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </button>
+                </div>
+
+                <!-- Consejos o Info de interés -->
+                <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100 flex space-x-3">
+                    <span class="text-xl">💡</span>
+                    <div class="text-xs text-blue-800 leading-relaxed">
+                        <p class="font-bold mb-0.5">Tip Pro de Amazon CR</p>
+                        Recuerda que en la pestaña de <strong>Ajustes</strong> puedes configurar tu salario por hora y las deducciones para que tu cálculo sea 100% exacto.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SECCIÓN 2: CALCULAR (FORMULARIO) ================= -->
+            <div id="tab-calcular" class="tab-content hidden space-y-5">
+                <div class="pt-2">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Paso 1 de 2</p>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Nueva Quincena</h1>
+                    <p class="text-xs text-gray-500 mt-1">Digita el formato <strong class="text-gray-700">HH:MM</strong> (Ej: 08:30 para 8 horas y media) o número decimal.</p>
+                </div>
+
+                <form id="calc-form" class="space-y-4">
+                    <!-- Horas Extra -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Horas extra (1.5x)</label>
+                            <span class="text-[10px] text-gray-400">Quincenal</span>
+                        </div>
+                        <input type="text" id="input-horas-extra" placeholder="HH:MM o Decimal" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Horas Feriado -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Horas feriado (2.0x)</label>
+                            <span class="text-[10px] text-gray-400">Pago Doble</span>
+                        </div>
+                        <input type="text" id="input-horas-feriado" placeholder="HH:MM o Decimal" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Extra Feriado -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Extra feriado (2.5x)</label>
+                            <span class="text-[10px] text-gray-400">OT Feriado</span>
+                        </div>
+                        <input type="text" id="input-extra-feriado" placeholder="HH:MM o Decimal" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Boot -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Boot (On-Call)</label>
+                            <span class="text-[10px] text-gray-400">Guardias</span>
+                        </div>
+                        <input type="text" id="input-boot" placeholder="HH:MM o Decimal" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Boot OT -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Boot OT</label>
+                            <span class="text-[10px] text-gray-400">OT de Guardia</span>
+                        </div>
+                        <input type="text" id="input-boot-ot" placeholder="HH:MM o Decimal" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <button type="button" onclick="calcularQuincena()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-2xl py-4 ios-shadow transition-all active:scale-[0.98] mt-2">
+                        Calcular Quincena
+                    </button>
+                </form>
+            </div>
+
+            <!-- ================= SECCIÓN 3: RESULTADO ================= -->
+            <div id="tab-resultado" class="tab-content hidden space-y-6">
+                <div class="pt-2 flex items-center space-x-2">
+                    <button onclick="changeTab('calcular')" class="text-blue-600 font-semibold flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                        <span>Atrás</span>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Salario Neto Estimado</p>
+                    <h1 class="text-4xl font-extrabold text-blue-600 tracking-tight mt-1" id="res-net-pay">₡0</h1>
+                    <p class="text-xs text-gray-500 mt-1">Fórmulas actualizadas de legislación costarricense</p>
+                </div>
+
+                <!-- Tarjeta Desglose de Ingresos -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Desglose de Ingresos</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Salario Base Quincenal:</span>
+                            <span class="font-semibold text-gray-800" id="res-base-sal">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Horas Extra (1.5x):</span>
+                            <span class="font-semibold text-gray-800" id="res-he-pay">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Horas Feriado (2.0x):</span>
+                            <span class="font-semibold text-gray-800" id="res-hf-pay">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Extra Feriado (2.5x):</span>
+                            <span class="font-semibold text-gray-800" id="res-ef-pay">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Boot (On-Call):</span>
+                            <span class="font-semibold text-gray-800" id="res-boot-pay">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Boot OT:</span>
+                            <span class="font-semibold text-gray-800" id="res-bootot-pay">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t font-bold text-gray-900">
+                            <span>Ingresos Brutos Totales:</span>
+                            <span id="res-gross-pay">₡0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Deducciones -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Deducciones de Ley</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">CCSS (Seguro Social 10.67%):</span>
+                            <span class="font-semibold text-red-500" id="res-ccss-ded">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm" id="row-solidarista">
+                            <span class="text-gray-500">Asoc. Solidarista:</span>
+                            <span class="font-semibold text-red-500" id="res-sol-ded">₡0</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t font-bold text-gray-900">
+                            <span>Total Deducciones:</span>
+                            <span class="text-red-600" id="res-total-ded">₡0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones con el resultado -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="guardarCalculo()" class="bg-green-600 hover:bg-green-700 text-white font-bold rounded-2xl py-3.5 text-center transition-all active:scale-[0.98] text-sm">
+                        Guardar Registro
+                    </button>
+                    <button onclick="changeTab('calcular')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-2xl py-3.5 text-center transition-all active:scale-[0.98] text-sm">
+                        Nuevo Cálculo
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= SECCIÓN 4: HISTORIAL ================= -->
+            <div id="tab-historial" class="tab-content hidden space-y-5">
+                <div class="pt-2 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Registros guardados</p>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Tu Historial</h1>
+                    </div>
+                    <button onclick="borrarHistorial()" class="text-xs font-semibold text-red-500 hover:text-red-700">
+                        Borrar todo
+                    </button>
+                </div>
+
+                <!-- Lista de Cálculos -->
+                <div class="space-y-3" id="historial-container">
+                    <!-- Se llena con Javascript -->
+                </div>
+            </div>
+
+            <!-- ================= SECCIÓN 5: CONFIGURACIÓN ================= -->
+            <div id="tab-ajustes" class="tab-content hidden space-y-5">
+                <div class="pt-2">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Personaliza la app</p>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Ajustes</h1>
+                </div>
+
+                <!-- Parámetros del salario -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Valores por Defecto</h3>
+                    
+                    <!-- Salario Base -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Salario Base Quincenal (Bruto)</label>
+                        <input type="number" id="setting-base-salary" value="500000"
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Pago por Hora -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Pago por Hora Regular (Calculado o Manual)</label>
+                        <input type="number" id="setting-hourly-rate" value="3500"
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        <p class="text-[10px] text-gray-400">Usado para computar el valor de las horas extras (x1.5, x2.0, etc.)</p>
+                    </div>
+
+                    <!-- Moneda -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Moneda</label>
+                        <select id="setting-currency" class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                            <option value="₡">Colón Costarricense (₡)</option>
+                            <option value="$">Dólar Estadounidense ($)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Deducciones Activas -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Deducciones Personalizadas</h3>
+                    
+                    <!-- CCSS -->
+                    <div class="flex items-center justify-between py-1">
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">Deducir CCSS (10.67%)</p>
+                            <p class="text-xs text-gray-400">Seguro Social Obligatorio</p>
+                        </div>
+                        <input type="checkbox" id="setting-ccss-enabled" checked class="w-5 h-5 accent-blue-600 rounded">
+                    </div>
+
+                    <!-- Solidarista -->
+                    <div class="flex items-center justify-between py-1">
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">Asociación Solidarista (ASEAMZ)</p>
+                            <p class="text-xs text-gray-400">Porcentaje de ahorro mensual</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" id="setting-sol-percent" value="3" class="w-14 bg-[#F2F2F7] text-center rounded-lg py-1 text-sm font-bold">
+                            <span class="text-sm text-gray-500">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="guardarAjustes()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-base rounded-2xl py-3.5 ios-shadow transition-all active:scale-[0.98]">
+                    Guardar Ajustes
+                </button>
+            </div>
+
+        </div>
+
+        <!-- BARRA DE NAVEGACIÓN INFERIOR (Estilo Apple Tab Bar) -->
+        <div class="absolute bottom-0 left-0 right-0 h-20 ios-blur border-t border-gray-200/50 flex justify-around items-center px-4 pb-4">
+            <!-- Item: Inicio -->
+            <button onclick="changeTab('inicio')" id="nav-inicio" class="flex flex-col items-center space-y-1 text-blue-600 font-semibold tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="text-[10px]">Inicio</span>
+            </button>
+
+            <!-- Item: Calcular -->
+            <button onclick="changeTab('calcular')" id="nav-calcular" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+                <span class="text-[10px]">Calcular</span>
+            </button>
+
+            <!-- Item: Historial -->
+            <button onclick="changeTab('historial')" id="nav-historial" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/>
+                </svg>
+                <span class="text-[10px]">Historial</span>
+            </button>
+
+            <!-- Item: Ajustes -->
+            <button onclick="changeTab('ajustes')" id="nav-ajustes" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                </svg>
+                <span class="text-[10px]">Ajustes</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ================= SISTEMA DE SCRIPTING (LOGICA DE LA APP) ================= -->
+    <script>
+        // Configuración Inicial de LocalStorage
+        let appConfig = {
+            baseSalary: 500000,
+            hourlyRate: 3500,
+            currency: '₡',
+            ccssEnabled: true,
+            solPercent: 3
+        };
+
+        // Estado del último cálculo en memoria
+        let ultimoCalculo = null;
+
+        // Cargar Ajustes guardados al iniciar
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('amz_calc_settings');
+            if (savedSettings) {
+                appConfig = JSON.parse(savedSettings);
+                document.getElementById('setting-base-salary').value = appConfig.baseSalary;
+                document.getElementById('setting-hourly-rate').value = appConfig.hourlyRate;
+                document.getElementById('setting-currency').value = appConfig.currency;
+                document.getElementById('setting-ccss-enabled').checked = appConfig.ccssEnabled;
+                document.getElementById('setting-sol-percent').value = appConfig.solPercent;
+            }
+            renderHistorial();
+            renderDashboard();
+        }
+
+        // Guardar Ajustes modificados por el usuario
+        function guardarAjustes() {
+            appConfig.baseSalary = parseFloat(document.getElementById('setting-base-salary').value) || 0;
+            appConfig.hourlyRate = parseFloat(document.getElementById('setting-hourly-rate').value) || 0;
+            appConfig.currency = document.getElementById('setting-currency').value;
+            appConfig.ccssEnabled = document.getElementById('setting-ccss-enabled').checked;
+            appConfig.solPercent = parseFloat(document.getElementById('setting-sol-percent').value) || 0;
+
+            localStorage.setItem('amz_calc_settings', JSON.stringify(appConfig));
+            alert('Ajustes guardados correctamente.');
+            renderDashboard();
+            changeTab('inicio');
+        }
+
+        // Cambiar entre pestañas de manera fluida estilo iOS
+        function changeTab(tabId) {
+            // Ocultar todas las pestañas
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // Mostrar pestaña seleccionada
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Resetear colores del Tab Bar
+            const navButtons = {
+                inicio: document.getElementById('nav-inicio'),
+                calcular: document.getElementById('nav-calcular'),
+                historial: document.getElementById('nav-historial'),
+                ajustes: document.getElementById('nav-ajustes')
+            };
+
+            for (let key in navButtons) {
+                if (key === tabId) {
+                    navButtons[key].classList.remove('text-gray-400');
+                    navButtons[key].classList.add('text-blue-600');
+                } else {
+                    navButtons[key].classList.add('text-gray-400');
+                    navButtons[key].classList.remove('text-blue-600');
+                }
+            }
+        }
+
+        // Convertir formato HH:MM o Decimal a horas float decimales
+        // Ej: "01:30" -> 1.5, "2" -> 2.0
+        function parseTimeToDecimal(val) {
+            if (!val) return 0;
+            val = val.trim();
+            if (val.includes(':')) {
+                const parts = val.split(':');
+                const hours = parseInt(parts[0]) || 0;
+                const minutes = parseInt(parts[1]) || 0;
+                return hours + (minutes / 60);
+            }
+            return parseFloat(val) || 0;
+        }
+
+        // Formateador de Moneda
+        function formatMoney(amount) {
+            const sym = appConfig.currency;
+            return sym + amount.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Logica Principal de Cálculo de Salario
+        function calcularQuincena() {
+            // Leer inputs del usuario
+            const hrsExtra = parseTimeToDecimal(document.getElementById('input-horas-extra').value);
+            const hrsFeriado = parseTimeToDecimal(document.getElementById('input-horas-feriado').value);
+            const extraFeriado = parseTimeToDecimal(document.getElementById('input-extra-feriado').value);
+            const boot = parseTimeToDecimal(document.getElementById('input-boot').value);
+            const bootOt = parseTimeToDecimal(document.getElementById('input-boot-ot').value);
+
+            const hrRate = appConfig.hourlyRate;
+            
+            // Fórmulas de cálculo
+            const baseSalary = appConfig.baseSalary;
+            const extraPay = hrsExtra * hrRate * 1.5;
+            const feriadoPay = hrsFeriado * hrRate * 2.0;
+            const extraFeriadoPay = extraFeriado * hrRate * 2.5; // Doble y medio usual para extras en feriados de pago obligatorio
+            const bootPay = boot * hrRate * 1.0; // Se asume 1x como pago estándar de guardia, ajustable en settings
+            const bootOtPay = bootOt * hrRate * 1.5;
+
+            const grossPay = baseSalary + extraPay + feriadoPay + extraFeriadoPay + bootPay + bootOtPay;
+
+            // Deducciones
+            let ccssDed = 0;
+            if (appConfig.ccssEnabled) {
+                ccssDed = grossPay * 0.1067; // CCSS es de 10.67% para empleados en CR
+            }
+
+            let solDed = 0;
+            if (appConfig.solPercent > 0) {
+                solDed = grossPay * (appConfig.solPercent / 100);
+            }
+
+            const totalDeducciones = ccssDed + solDed;
+            const netPay = grossPay - totalDeducciones;
+
+            // Guardar en variable global temporal
+            ultimoCalculo = {
+                fecha: new Date().toLocaleDateString('es-CR', { day: '2-digit', month: 'short' }),
+                baseSalary,
+                extraPay,
+                feriadoPay,
+                extraFeriadoPay,
+                bootPay,
+                bootOtPay,
+                grossPay,
+                ccssDed,
+                solDed,
+                totalDeducciones,
+                netPay,
+                rawHours: {
+                    hrsExtra, hrsFeriado, extraFeriado, boot, bootOt
+                }
+            };
+
+            // Imprimir Resultados en Pantalla de Resultados
+            document.getElementById('res-net-pay').innerText = formatMoney(netPay);
+            document.getElementById('res-base-sal').innerText = formatMoney(baseSalary);
+            document.getElementById('res-he-pay').innerText = formatMoney(extraPay);
+            document.getElementById('res-hf-pay').innerText = formatMoney(feriadoPay);
+            document.getElementById('res-ef-pay').innerText = formatMoney(extraFeriadoPay);
+            document.getElementById('res-boot-pay').innerText = formatMoney(bootPay);
+            document.getElementById('res-bootot-pay').innerText = formatMoney(bootOtPay);
+            document.getElementById('res-gross-pay').innerText = formatMoney(grossPay);
+            
+            document.getElementById('res-ccss-ded').innerText = formatMoney(ccssDed);
+            if (appConfig.solPercent > 0) {
+                document.getElementById('row-solidarista').style.display = 'flex';
+                document.getElementById('res-sol-ded').innerText = formatMoney(solDed);
+            } else {
+                document.getElementById('row-solidarista').style.display = 'none';
+            }
+            document.getElementById('res-total-ded').innerText = formatMoney(totalDeducciones);
+
+            // Cambiar a pestaña de Resultados
+            changeTab('resultado');
+        }
+
+        // Guardar el cálculo actual en el Historial del LocalStorage
+        function guardarCalculo() {
+            if (!ultimoCalculo) return;
+
+            let history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+            history.unshift(ultimoCalculo); // Insertar al principio para ver el más reciente primero
+            localStorage.setItem('amz_calc_history', JSON.stringify(history));
+
+            alert('¡Cálculo guardado en el historial de tu dispositivo!');
+            renderHistorial();
+            renderDashboard();
+            
+            // Limpiar formulario
+            document.getElementById('calc-form').reset();
+            
+            changeTab('inicio');
+        }
+
+        // Mostrar listado de historial guardado
+        function renderHistorial() {
+            const container = document.getElementById('historial-container');
+            const history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <p class="text-3xl">📭</p>
+                        <p class="text-sm mt-2">No tienes cálculos guardados aún.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            history.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-4 ios-shadow border border-gray-100 flex justify-between items-center";
+                card.innerHTML = `
+                    <div>
+                        <p class="text-xs font-bold text-gray-400">${item.fecha}</p>
+                        <p class="text-lg font-extrabold text-gray-800">${formatMoney(item.netPay)}</p>
+                        <p class="text-[10px] text-gray-500">Gross: ${formatMoney(item.grossPay)} | Ded: ${formatMoney(item.totalDeducciones)}</p>
+                    </div>
+                    <button onclick="borrarRegistro(${index})" class="text-gray-400 hover:text-red-500 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.34 12.142m-1.96 0L10.16 9M9 5a2 2 0 012-2h2a2 2 0 012 2m3 7h10M4 7h16" /></svg>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Renderizar datos dinámicos en Dashboard principal
+        function renderDashboard() {
+            const history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+            const netPayEl = document.getElementById('dash-net-pay');
+            const grossPayEl = document.getElementById('dash-gross-pay');
+            const dedEl = document.getElementById('dash-deductions');
+
+            if (history.length > 0) {
+                const latest = history[0];
+                netPayEl.innerText = formatMoney(latest.netPay);
+                grossPayEl.innerText = formatMoney(latest.grossPay);
+                dedEl.innerText = formatMoney(latest.totalDeducciones);
+            } else {
+                netPayEl.innerText = formatMoney(0);
+                grossPayEl.innerText = formatMoney(0);
+                dedEl.innerText = formatMoney(0);
+            }
+        }
+
+        // Borrar un solo registro del historial
+        function borrarRegistro(index) {
+            let history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+            history.splice(index, 1);
+            localStorage.setItem('amz_calc_history', JSON.stringify(history));
+            renderHistorial();
+            renderDashboard();
+        }
+
+        // Borrar todo el historial de una vez
+        function borrarHistorial() {
+            if (confirm('¿Estás seguro de que quieres borrar todos tus cálculos guardados?')) {
+                localStorage.removeItem('amz_calc_history');
+                renderHistorial();
+                renderDashboard();
+            }
+        }
+
+        // Actualizar el reloj en la simulación móvil
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeStr = hours + ':' + minutes;
+            const el = document.getElementById('device-time');
+            if (el) el.textContent = timeStr;
+        }
+
+        // Inicializar app
+        window.onload = function() {
+            loadSettings();
+            setInterval(updateClock, 1000);
+            updateClock();
+        };
+    </script>
+</body>
+</html>
