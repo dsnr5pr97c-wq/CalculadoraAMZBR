@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora Amazon CR v4.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #F2F2F7;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-blur {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ios-shadow {
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tab-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-6">
+
+    <div class="bg-[#F2F2F7] w-full max-w-md sm:rounded-[48px] sm:h-[850px] h-screen flex flex-col justify-between overflow-hidden relative sm:border-[8px] sm:border-[#1C1C1E] ios-shadow">
+        
+        <div class="hidden sm:flex justify-between items-center px-8 pt-3 pb-2 text-xs font-semibold text-gray-900 select-none bg-[#F2F2F7]">
+            <span id="device-time">9:41</span>
+            <div class="w-28 h-4 bg-black rounded-full absolute left-1/2 transform -translate-x-1/2 top-2"></div>
+            <div class="flex items-center space-x-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M2 17h2v3H2zm4-4h2v7H6zm4-4h2v11h-2zm4-4h2v15h-2zm4-4h2v19h-2z"/></svg>
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM4.8 12.5a10 10 0 0 1 14.4 0l-1.4 1.4a8 8 0 0 0-11.6 0l-1.4-1.4zm2.9-2.9a6 6 0 0 1 8.6 0l-1.4 1.4a4 4 0 0 0-5.8 0L7.7 9.6z"/></svg>
+                <div class="w-5 h-2.5 border border-current rounded-sm p-0.5 flex items-center"><div class="bg-current h-full w-3.5 rounded-2xs"></div></div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar p-6 pb-24">
+            
+            <!-- INICIO TAB -->
+            <div id="tab-inicio" class="tab-content space-y-6">
+                <div class="flex justify-between items-center pt-2">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Calculadora Amazon CR</p>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">¡Hola! <span class="text-xs bg-blue-100 text-blue-600 px-2.5 py-1 rounded-full align-middle ml-1 tracking-normal">v4.3</span></h1>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        AZ
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Salario -->
+                <div class="bg-gradient-to-br from-[#1C1C1E] to-[#2C2C2E] rounded-3xl p-6 text-white ios-shadow relative overflow-hidden">
+                    <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-4 translate-y-4">
+                        <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/></svg>
+                    </div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Último Cálculo Proyectado</p>
+                    <h2 class="text-4xl font-extrabold mt-2 tracking-tight" id="dash-net-pay">₡0.00</h2>
+                    <p class="text-xs text-green-400 font-medium mt-1">✓ Proyección futura con Renta, CCSS y AsoAmazon</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-gray-800">
+                        <div>
+                            <p class="text-[10px] uppercase text-gray-500 font-bold">Salario Bruto</p>
+                            <p class="text-sm font-semibold text-gray-200" id="dash-gross-pay">₡0.00</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] uppercase text-gray-500 font-bold">Deducciones</p>
+                            <p class="text-sm font-semibold text-red-400" id="dash-deductions">₡0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Dashboard: Pendiente por recibir y Próximo depósito -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2">
+                        <span class="text-xl">💰</span>
+                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Estado de Planilla</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="bg-[#F2F2F7] p-3 rounded-2xl">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Pendiente por Recibir</p>
+                            <p class="text-base font-extrabold text-blue-600 mt-1" id="dash-pending-receive">₡0.00</p>
+                        </div>
+                        <div class="bg-[#F2F2F7] p-3 rounded-2xl">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Próximo Depósito</p>
+                            <p class="text-sm font-bold text-gray-800 mt-1" id="dash-next-deposit-date">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta en Inicio: Pagos Pendientes (Feriados) con botón X -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2">
+                        <span class="text-xl">⏳</span>
+                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Pagos Pendientes (Feriados a cobrar)</h3>
+                    </div>
+                    <div id="inicio-pending-container" class="space-y-2 pt-1">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+
+                <!-- Calendario de Pagos Automático -->
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2">
+                        <span class="text-xl">📅</span>
+                        <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Próximos Pagos</h3>
+                    </div>
+                    <div class="space-y-2.5 pt-1" id="calendar-container"></div>
+                    <p class="text-[10px] text-gray-400 text-center pt-1">Adelanto automático según reglas oficiales Amazon CR.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">Acciones Rápidas</h3>
+                    <button onclick="changeTab('calcular')" class="w-full bg-white hover:bg-gray-50 rounded-2xl p-4 flex items-center justify-between ios-shadow transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-900 text-sm">Nueva proyección futura</p>
+                                <p class="text-xs text-gray-500">Calcula con fecha exacta, horas extra y feriados</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CALCULAR TAB -->
+            <div id="tab-calcular" class="tab-content hidden space-y-5">
+                
+                <div class="pt-2 flex justify-between items-center">
+                    <button type="button" onclick="changeTab('inicio')" class="text-blue-600 font-semibold flex items-center space-x-1 active:scale-95 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                        </svg>
+                        <span>Atrás</span>
+                    </button>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Proyección Futura</span>
+                </div>
+
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Proyectar Pago</h1>
+                    <p class="text-xs text-gray-500 mt-1">Selecciona la fecha objetivo y detalla las horas estimadas.</p>
+                </div>
+
+                <form id="calc-form" class="space-y-4">
+                    <!-- Selector de Fecha Exacta -->
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Fecha Objetivo (Futuro)</label>
+                        <input type="date" id="input-fecha-objetivo"
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        <p class="text-[10px] text-gray-400">Si hay pagos de feriados pendientes, se sumarán de forma automática a esta fecha.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                            <label class="text-[11px] font-bold text-gray-800 uppercase tracking-wide">Pago por hora (₡)</label>
+                            <input type="number" step="any" id="input-rate" value="3679.49"
+                                class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                            <label class="text-[11px] font-bold text-gray-800 uppercase tracking-wide">Horas base</label>
+                            <input type="number" id="input-base-hours" value="120"
+                                class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Horas extra (1.5x)</label>
+                            <span class="text-[10px] text-gray-400">Extra ordinaria</span>
+                        </div>
+                        <input type="text" id="input-horas-extra" placeholder="12:49" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-3 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Horas feriado (Pago Doble)</label>
+                            <span class="text-[10px] text-blue-600 font-semibold">Se pasa íntegro a pendiente</span>
+                        </div>
+                        <select id="input-feriado-selector" class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"></select>
+                        <input type="text" id="input-horas-feriado" placeholder="Ej: 08:00" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Horas Extra Feriado (3.0x)</label>
+                            <span class="text-[10px] text-gray-400">Triple Pago</span>
+                        </div>
+                        <input type="text" id="input-extra-feriado" placeholder="03:54" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Boot Normal (1.0x)</label>
+                            <span class="text-[10px] text-gray-400">Guardias estándar</span>
+                        </div>
+                        <input type="text" id="input-boot" placeholder="00:48" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 ios-shadow space-y-1.5 border border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-gray-800 uppercase tracking-wide">Boot OT (1.5x)</label>
+                            <span class="text-[10px] text-gray-400">OT de Guardia</span>
+                        </div>
+                        <input type="text" id="input-boot-ot" placeholder="00:06" 
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+
+                    <button type="button" onclick="CalculationsModule.ejecutarCalculo()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-2xl py-4 ios-shadow transition-all active:scale-[0.98] mt-2">
+                        Calcular Proyección
+                    </button>
+                </form>
+            </div>
+
+            <!-- RESULTADO TAB -->
+            <div id="tab-resultado" class="tab-content hidden space-y-6">
+                <div class="pt-2 flex items-center space-x-2">
+                    <button onclick="changeTab('calcular')" class="text-blue-600 font-semibold flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                        <span>Atrás</span>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Salario Neto Proyectado</p>
+                    <h1 class="text-4xl font-extrabold text-blue-600 tracking-tight mt-1" id="res-net-pay">₡0.00</h1>
+                    <p class="text-xs text-gray-500 mt-1" id="res-fecha-subtitle">Para la fecha indicada</p>
+                </div>
+
+                <!-- Bloque Feriados Pendientes Incluidos -->
+                <div id="res-bloque-incluidos-container" class="hidden bg-amber-50 rounded-3xl p-5 ios-shadow border border-amber-200 space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-amber-200 pb-2">
+                        <span class="text-xl">📥</span>
+                        <h3 class="text-sm font-bold text-amber-900 uppercase tracking-wider">Feriados Pendientes Cobrados en esta Fecha</h3>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-amber-800">Total Feriados Acumulados Sumados:</span>
+                            <span class="font-bold text-amber-900" id="res-inc-total">₡0.00</span>
+                        </div>
+                        <p class="text-[10px] text-amber-700">Estos montos pendientes se han sumado al bruto y se eliminarán de tus pendientes activos al guardar.</p>
+                    </div>
+                </div>
+
+                <!-- Bloque Feriados Generados (Pasa íntegro a pendiente) -->
+                <div id="res-bloque-feriados-container" class="hidden bg-blue-50 rounded-3xl p-5 ios-shadow border border-blue-100 space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-blue-200 pb-2">
+                        <span class="text-xl">⚖️</span>
+                        <h3 class="text-sm font-bold text-blue-900 uppercase tracking-wider">Pago por Feriado (Generado a Pendiente)</h3>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-blue-700">Total Feriado (100%):</span>
+                            <span class="font-bold text-blue-900" id="res-fer-total">₡0.00</span>
+                        </div>
+                        <p class="text-[10px] text-blue-700">Este monto se registrará como pago pendiente para tu próxima quincena al guardar la proyección.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Desglose de Ingresos</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Salario Regular Base:</span>
+                            <span class="font-semibold text-gray-800" id="res-base-sal">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Horas Extra (1.5x):</span>
+                            <span class="font-semibold text-gray-800" id="res-he-pay">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm" id="row-pending-added" style="display:none;">
+                            <span class="text-amber-600 font-semibold">Feriados Pendientes Sumados:</span>
+                            <span class="font-bold text-amber-700" id="res-pend-added-val">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Extra Feriado (3.0x):</span>
+                            <span class="font-semibold text-gray-800" id="res-ef-pay">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Boot Normal (1.0x):</span>
+                            <span class="font-semibold text-gray-800" id="res-boot-pay">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Boot OT (1.5x):</span>
+                            <span class="font-semibold text-gray-800" id="res-bootot-pay">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t font-bold text-gray-900">
+                            <span>Total Bruto Proyectado:</span>
+                            <span id="res-gross-pay">₡0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Deducciones Aplicadas</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">CCSS (10.83%):</span>
+                            <span class="font-semibold text-red-500" id="res-ccss-ded">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Impuesto Renta:</span>
+                            <span class="font-semibold text-red-500" id="res-renta-ded">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm" id="row-solidarista">
+                            <span class="text-gray-500">AsoAmazon:</span>
+                            <span class="font-semibold text-red-500" id="res-sol-ded">₡0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t font-bold text-gray-900">
+                            <span>Total Deducciones:</span>
+                            <span class="text-red-600" id="res-total-ded">₡0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="CalculationsModule.guardarCalculo()" class="bg-green-600 hover:bg-green-700 text-white font-bold rounded-2xl py-3.5 text-center transition-all active:scale-[0.98] text-sm">
+                        Guardar Proyección
+                    </button>
+                    <button onclick="changeTab('calcular')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-2xl py-3.5 text-center transition-all active:scale-[0.98] text-sm">
+                        Nuevo Cálculo
+                    </button>
+                </div>
+            </div>
+
+            <!-- HISTORIAL TAB -->
+            <div id="tab-historial" class="tab-content hidden space-y-5">
+                <div class="pt-2 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Registros guardados</p>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Tu Historial</h1>
+                    </div>
+                    <button onclick="HistoryModule.borrarHistorial()" class="text-xs font-semibold text-red-500 hover:text-red-700">
+                        Borrar todo
+                    </button>
+                </div>
+                <div class="space-y-3" id="historial-container"></div>
+            </div>
+
+            <!-- DETALLE DE REGISTRO MODAL / VISTA -->
+            <div id="tab-detalle-registro" class="tab-content hidden space-y-5">
+                <div class="pt-2 flex items-center space-x-2">
+                    <button onclick="changeTab('historial')" class="text-blue-600 font-semibold flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                        <span>Volver al Historial</span>
+                    </button>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Detalle de Proyección</h1>
+                    <p class="text-xs text-gray-500 mt-1" id="det-fecha-label">Fecha: --</p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-3">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Valores Ingresados Originalmente</h3>
+                    <div id="det-inputs-container" class="space-y-2 text-sm text-gray-600">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-3">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Resultados Financieros</h3>
+                    <div id="det-results-container" class="space-y-2 text-sm text-gray-600">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- AJUSTES TAB -->
+            <div id="tab-ajustes" class="tab-content hidden space-y-5">
+                <div class="pt-2">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Personaliza la app</p>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Ajustes</h1>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Valores por Defecto</h3>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Pago por Hora Regular (₡)</label>
+                        <input type="number" step="any" id="setting-hourly-rate" value="3679.49"
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Horas Base</label>
+                        <input type="number" id="setting-base-hours" value="120"
+                            class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase">Moneda</label>
+                        <select id="setting-currency" class="w-full bg-[#F2F2F7] text-gray-900 rounded-xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                            <option value="₡">Colón Costarricense (₡)</option>
+                            <option value="$">Dólar Estadounidense ($)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 ios-shadow border border-gray-100 space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Deducciones</h3>
+                    <div class="flex items-center justify-between py-1">
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">Asociación AsoAmazon</p>
+                            <p class="text-xs text-gray-400">Porcentaje de ahorro</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="setting-aso-enabled" checked class="w-5 h-5 accent-blue-600 rounded">
+                            <input type="number" id="setting-aso-percent" value="5" class="w-12 bg-[#F2F2F7] text-center rounded-lg py-1 text-sm font-bold">
+                            <span class="text-sm text-gray-500">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="guardarAjustes()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-base rounded-2xl py-3.5 ios-shadow transition-all active:scale-[0.98]">
+                    Guardar Ajustes
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Barra de Navegación Inferior -->
+        <div class="absolute bottom-0 left-0 right-0 h-20 ios-blur border-t border-gray-200/50 flex justify-around items-center px-4 pb-4">
+            <button onclick="changeTab('inicio')" id="nav-inicio" class="flex flex-col items-center space-y-1 text-blue-600 font-semibold tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-[10px]">Inicio</span>
+            </button>
+            <button onclick="changeTab('calcular')" id="nav-calcular" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span class="text-[10px]">Calcular</span>
+            </button>
+            <button onclick="changeTab('historial')" id="nav-historial" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/></svg>
+                <span class="text-[10px]">Historial</span>
+            </button>
+            <button onclick="changeTab('ajustes')" id="nav-ajustes" class="flex flex-col items-center space-y-1 text-gray-400 tab-transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                <span class="text-[10px]">Ajustes</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        let appConfig = {
+            hourlyRate: 3679.49,
+            baseHours: 120,
+            currency: '₡',
+            asoEnabled: true,
+            asoPercent: 5
+        };
+        let ultimoCalculo = null;
+
+        const CalendarModule = {
+            obtenerFechaAjustada(año, mes, diaObjetivo) {
+                const ultimoDiaDelMes = new Date(año, mes + 1, 0).getDate();
+                const diaReal = Math.min(diaObjetivo, ultimoDiaDelMes);
+                let fecha = new Date(año, mes, diaReal);
+                const diaSemana = fecha.getDay();
+
+                if (diaSemana === 1) fecha.setDate(fecha.getDate() - 3);
+                else if (diaSemana >= 2 && diaSemana <= 6) fecha.setDate(fecha.getDate() - 1);
+                else if (diaSemana === 0) fecha.setDate(fecha.getDate() - 2);
+
+                return fecha;
+            },
+
+            renderCalendar() {
+                let hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                let año = hoy.getFullYear();
+                let mes = hoy.getMonth();
+                let proximosPagos = [];
+
+                let oficialQuince = new Date(año, mes, 15);
+                let pagoQuince = this.obtenerFechaAjustada(año, mes, 15);
+                if (pagoQuince >= hoy) proximosPagos.push({ tipo: "Pago 15", oficial: oficialQuince, fecha: pagoQuince });
+
+                let oficialTreinta = new Date(año, mes, 30);
+                let pagoTreinta = this.obtenerFechaAjustada(año, mes, 30);
+                if (pagoTreinta >= hoy) proximosPagos.push({ tipo: "Pago 30", oficial: oficialTreinta, fecha: pagoTreinta });
+
+                if (proximosPagos.length < 2) {
+                    let oficialQuinceProx = new Date(año, mes + 1, 15);
+                    let pagoQuinceProx = this.obtenerFechaAjustada(año, mes + 1, 15);
+                    proximosPagos.push({ tipo: "Pago 15", oficial: oficialQuinceProx, fecha: pagoQuinceProx });
+                }
+                if (proximosPagos.length < 2) {
+                    let oficialTreintaProx = new Date(año, mes + 1, 30);
+                    let pagoTreintaProx = this.obtenerFechaAjustada(año, mes + 1, 30);
+                    proximosPagos.push({ tipo: "Pago 30", oficial: oficialTreintaProx, fecha: pagoTreintaProx });
+                }
+
+                const container = document.getElementById('calendar-container');
+                if (!container) return;
+                container.innerHTML = '';
+                
+                proximosPagos.slice(0, 2).forEach(pago => {
+                    let oficialTexto = pago.oficial.toLocaleDateString('es-CR', { day: 'numeric', month: 'long' });
+                    let fechaTexto = pago.fecha.toLocaleDateString('es-CR', { weekday: 'long', day: 'numeric', month: 'short' });
+                    fechaTexto = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-[#F2F2F7] rounded-xl px-4 py-2.5 border border-gray-200">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase block">Oficial: ${oficialTexto}</span>
+                                <span class="text-xs font-semibold text-gray-700">Depósito:</span>
+                            </div>
+                            <span class="text-sm font-bold text-blue-600">${fechaTexto}</span>
+                        </div>
+                    `;
+                });
+            }
+        };
+
+        const FeriadosModule = {
+            calcularPascua(ano) {
+                let a = ano % 19, b = Math.floor(ano / 100), c = ano % 100,
+                    d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+                    g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30,
+                    i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7,
+                    m = Math.floor((a + 11 * h + 22 * l) / 451),
+                    mes = Math.floor((h + l - 7 * m + 114) / 31) - 1,
+                    dia = ((h + l - 7 * m + 114) % 31) + 1;
+                return new Date(ano, mes, dia);
+            },
+            obtenerFeriadosCR(ano) {
+                let pascua = this.calcularPascua(ano);
+                let juevesSanto = new Date(pascua); juevesSanto.setDate(pascua.getDate() - 3);
+                let viernesSanto = new Date(pascua); viernesSanto.setDate(pascua.getDate() - 2);
+                return [
+                    { nombre: "1 Enero (Año Nuevo)", fecha: new Date(ano, 0, 1) },
+                    { nombre: "Jueves Santo", fecha: juevesSanto },
+                    { nombre: "Viernes Santo", fecha: viernesSanto },
+                    { nombre: "11 Abril (Juan Santamaría)", fecha: new Date(ano, 3, 11) },
+                    { nombre: "1 Mayo (Día del Trabajador)", fecha: new Date(ano, 4, 1) },
+                    { nombre: "25 Julio (Anexión de Nicoya)", fecha: new Date(ano, 6, 25) },
+                    { nombre: "2 Agosto (Virgen de los Ángeles)", fecha: new Date(ano, 7, 2) },
+                    { nombre: "15 Agosto (Día de la Madre)", fecha: new Date(ano, 7, 15) },
+                    { nombre: "15 Septiembre (Independencia)", fecha: new Date(ano, 8, 15) },
+                    { nombre: "1 Diciembre (Abolición Ejército)", fecha: new Date(ano, 11, 1) },
+                    { nombre: "25 Diciembre (Navidad)", fecha: new Date(ano, 11, 25) }
+                ];
+            },
+            inicializarSelectorFeriados() {
+                const select = document.getElementById('input-feriado-selector');
+                if (!select) return;
+                let anoActual = new Date().getFullYear();
+                let lista = this.obtenerFeriadosCR(anoActual);
+                select.innerHTML = '<option value="">-- Seleccionar Feriado Trabajado (Opcional) --</option>';
+                lista.forEach(f => {
+                    let fechaStr = f.fecha.toLocaleDateString('es-CR', { day: 'numeric', month: 'short' });
+                    select.innerHTML += `<option value="${f.nombre} (${fechaStr})">${f.nombre} - ${fechaStr}</option>`;
+                });
+            }
+        };
+
+        const PendingPaymentsModule = {
+            obtenerPendientes() {
+                return JSON.parse(localStorage.getItem('amz_pending_payments')) || [];
+            },
+            guardarPendientes(pendientes) {
+                localStorage.setItem('amz_pending_payments', JSON.stringify(pendientes));
+            },
+            agregarPendiente(feriadoNombre, montoTotal) {
+                let pendientes = this.obtenerPendientes();
+                let hoy = new Date();
+                pendientes.push({
+                    id: Date.now(),
+                    fechaGeneracion: hoy.toLocaleDateString('es-CR', { day: '2-digit', month: 'short' }),
+                    feriado: feriadoNombre || "Feriado Trabajado",
+                    montoPendiente: montoTotal, // 100% del feriado pasa a pendiente
+                    fechaProximaPago: "Próxima fecha configurada"
+                });
+                this.guardarPendientes(pendientes);
+                this.renderTarjetaInicio();
+            },
+            removerPendiente(id) {
+                let pendientes = this.obtenerPendientes();
+                pendientes = pendientes.filter(item => item.id !== id);
+                this.guardarPendientes(pendientes);
+                this.renderTarjetaInicio();
+            },
+            limpiarTodos() {
+                localStorage.removeItem('amz_pending_payments');
+                this.renderTarjetaInicio();
+            },
+            renderTarjetaInicio() {
+                const container = document.getElementById('inicio-pending-container');
+                if (!container) return;
+                let pendientes = this.obtenerPendientes();
+
+                if (pendientes.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-500 text-center py-2">No hay pagos pendientes.</p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                pendientes.forEach(item => {
+                    container.innerHTML += `
+                        <div class="bg-[#F2F2F7] rounded-2xl p-3 border border-gray-200 space-y-1.5 relative">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-gray-800">${item.feriado}</span>
+                                <button onclick="PendingPaymentsModule.removerPendiente(${item.id})" class="w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center font-bold text-xs transition-colors" title="Eliminar pago pendiente">✕</button>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">Monto diferido (100%):</span>
+                                <span class="font-bold text-amber-700">${formatMoney(item.montoPendiente)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        };
+
+        const CalculationsModule = {
+            ejecutarCalculo() {
+                const fechaInput = document.getElementById('input-fecha-objetivo').value;
+                const fechaObjetivo = fechaInput ? new Date(fechaInput).toLocaleDateString('es-CR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Fecha no especificada';
+                
+                const rate = parseFloat(document.getElementById('input-rate').value) || 3679.49;
+                const baseHours = parseFloat(document.getElementById('input-base-hours').value) || 120;
+
+                const hrsExtra = parseTimeToDecimal(document.getElementById('input-horas-extra').value);
+                const hrsFeriado = parseTimeToDecimal(document.getElementById('input-horas-feriado').value);
+                const feriadoNombre = document.getElementById('input-feriado-selector').value;
+                const extraFeriado = parseTimeToDecimal(document.getElementById('input-extra-feriado').value);
+                const boot = parseTimeToDecimal(document.getElementById('input-boot').value);
+                const bootOt = parseTimeToDecimal(document.getElementById('input-boot-ot').value);
+
+                const regularPay = baseHours * rate;
+                const extraPay = hrsExtra * rate * 1.5;
+                
+                // El feriado ya no se paga de forma inmediata en esta quincena, pasa 100% a pendiente
+                const feriadoTotalGenerado = hrsFeriado * rate * 2; 
+
+                const extraFeriadoPay = extraFeriado * rate * 3;
+                const bootPay = boot * rate;
+                const bootOtPay = bootOt * rate * 1.5;
+
+                // Sumar automáticamente los pagos pendientes anteriores a esta fecha actual
+                let pendientesActuales = PendingPaymentsModule.obtenerPendientes();
+                let totalPendientesSumar = pendientesActuales.reduce((acc, curr) => acc + curr.montoPendiente, 0);
+
+                let baseGrossPay = regularPay + extraPay + extraFeriadoPay + bootPay + bootOtPay;
+                let grossPay = baseGrossPay + totalPendientesSumar;
+
+                const ccssDed = grossPay * 0.1083;
+                const projectedMonthly = grossPay * 2;
+                const rentaDed = rentaMensual(projectedMonthly) / 2;
+
+                let asoAmazonDed = appConfig.asoEnabled ? grossPay * (appConfig.asoPercent / 100) : 0;
+                const totalDeducciones = ccssDed + rentaDed + asoAmazonDed;
+                const netPay = grossPay - totalDeducciones;
+
+                ultimoCalculo = {
+                    id: Date.now(),
+                    fechaObjetivo,
+                    inputs: {
+                        fechaInput, rate, baseHours, 
+                        hrsExtraRaw: document.getElementById('input-horas-extra').value || '0',
+                        hrsFeriadoRaw: document.getElementById('input-horas-feriado').value || '0',
+                        feriadoNombre,
+                        extraFeriadoRaw: document.getElementById('input-extra-feriado').value || '0',
+                        bootRaw: document.getElementById('input-boot').value || '0',
+                        bootOtRaw: document.getElementById('input-boot-ot').value || '0'
+                    },
+                    regularPay, extraPay, feriadoPay: feriadoTotalGenerado, feriadoNombre, extraFeriadoPay, bootPay, bootOtPay, 
+                    totalPendientesSumar, grossPay,
+                    ccssDed, rentaDed, asoAmazonDed, totalDeducciones, netPay
+                };
+
+                document.getElementById('res-net-pay').innerText = formatMoney(netPay);
+                document.getElementById('res-fecha-subtitle').innerText = `Proyección para: ${fechaObjetivo}`;
+                document.getElementById('res-base-sal').innerText = formatMoney(regularPay);
+                document.getElementById('res-he-pay').innerText = formatMoney(extraPay);
+                document.getElementById('res-ef-pay').innerText = formatMoney(extraFeriadoPay);
+                document.getElementById('res-boot-pay').innerText = formatMoney(bootPay);
+                document.getElementById('res-bootot-pay').innerText = formatMoney(bootOtPay);
+                document.getElementById('res-gross-pay').innerText = formatMoney(grossPay);
+                document.getElementById('res-ccss-ded').innerText = formatMoney(ccssDed);
+                document.getElementById('res-renta-ded').innerText = formatMoney(rentaDed);
+
+                // Mostrar bloque de pendientes sumados si los hay
+                const bloqueIncluidos = document.getElementById('res-bloque-incluidos-container');
+                const rowPendingAdded = document.getElementById('row-pending-added');
+                if (totalPendientesSumar > 0) {
+                    bloqueIncluidos.classList.remove('hidden');
+                    rowPendingAdded.style.display = 'flex';
+                    document.getElementById('res-inc-total').innerText = formatMoney(totalPendientesSumar);
+                    document.getElementById('res-pend-added-val').innerText = formatMoney(totalPendientesSumar);
+                } else {
+                    bloqueIncluidos.classList.add('hidden');
+                    rowPendingAdded.style.display = 'none';
+                }
+
+                const bloqueFeriados = document.getElementById('res-bloque-feriados-container');
+                if (feriadoTotalGenerado > 0) {
+                    bloqueFeriados.classList.remove('hidden');
+                    document.getElementById('res-fer-total').innerText = formatMoney(feriadoTotalGenerado);
+                } else {
+                    bloqueFeriados.classList.add('hidden');
+                }
+
+                if (appConfig.asoEnabled) {
+                    document.getElementById('row-solidarista').style.display = 'flex';
+                    document.getElementById('res-sol-ded').innerText = formatMoney(asoAmazonDed);
+                } else {
+                    document.getElementById('row-solidarista').style.display = 'none';
+                }
+
+                document.getElementById('res-total-ded').innerText = formatMoney(totalDeducciones);
+                changeTab('resultado');
+            },
+
+            guardarCalculo() {
+                if (!ultimoCalculo) return;
+                let history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+                history.unshift(ultimoCalculo);
+                localStorage.setItem('amz_calc_history', JSON.stringify(history));
+
+                // Al guardar, limpiamos los pendientes cobrados y si marcó un nuevo feriado, se crea su pendiente al 100%
+                PendingPaymentsModule.limpiarTodos();
+                if (ultimoCalculo.feriadoPay > 0) {
+                    PendingPaymentsModule.agregarPendiente(ultimoCalculo.feriadoNombre, ultimoCalculo.feriadoPay);
+                }
+
+                alert('¡Proyección guardada y pagos pendientes liquidados!');
+                HistoryModule.renderHistorial();
+                DashboardModule.renderDashboard();
+                PendingPaymentsModule.renderTarjetaInicio();
+                document.getElementById('calc-form').reset();
+                document.getElementById('input-rate').value = appConfig.hourlyRate;
+                document.getElementById('input-base-hours').value = appConfig.baseHours;
+                changeTab('inicio');
+            }
+        };
+
+        const HistoryModule = {
+            renderHistorial() {
+                const container = document.getElementById('historial-container');
+                const history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+
+                if (!container) return;
+                if (history.length === 0) {
+                    container.innerHTML = `<div class="text-center py-8 text-gray-400"><p class="text-3xl">📭</p><p class="text-sm mt-2">No tienes proyecciones guardadas.</p></div>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                history.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-2xl p-4 ios-shadow border border-gray-100 flex justify-between items-center";
+                    card.innerHTML = `
+                        <div onclick="HistoryModule.verDetalle(${index})" class="flex-1 cursor-pointer">
+                            <p class="text-xs font-bold text-blue-600">Fecha: ${item.fechaObjetivo}</p>
+                            <p class="text-lg font-extrabold text-gray-800">${formatMoney(item.netPay)}</p>
+                            <p class="text-[10px] text-gray-500">Bruto: ${formatMoney(item.grossPay)} | Ded: ${formatMoney(item.totalDeducciones)}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="HistoryModule.verDetalle(${index})" class="text-xs bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl font-semibold">Ver</button>
+                            <button onclick="HistoryModule.borrarRegistro(${index})" class="text-gray-400 hover:text-red-500 p-2">✕</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            },
+
+            verDetalle(index) {
+                const history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+                const item = history[index];
+                if (!item) return;
+
+                document.getElementById('det-fecha-label').innerText = `Fecha Objetivo: ${item.fechaObjetivo}`;
+                
+                const inputsContainer = document.getElementById('det-inputs-container');
+                inputsContainer.innerHTML = `
+                    <p><strong>Pago por hora:</strong> ${formatMoney(item.inputs.rate)}</p>
+                    <p><strong>Horas base:</strong> ${item.inputs.baseHours}</p>
+                    <p><strong>Horas extra (1.5x):</strong> ${item.inputs.hrsExtraRaw}</p>
+                    <p><strong>Feriado:</strong> ${item.inputs.feriadoNombre || 'Ninguno'} (${item.inputs.hrsFeriadoRaw} hrs)</p>
+                    <p><strong>Extra Feriado (3.0x):</strong> ${item.inputs.extraFeriadoRaw}</p>
+                    <p><strong>Boot Normal:</strong> ${item.inputs.bootRaw}</p>
+                    <p><strong>Boot OT:</strong> ${item.inputs.bootOtRaw}</p>
+                `;
+
+                const resultsContainer = document.getElementById('det-results-container');
+                resultsContainer.innerHTML = `
+                    <p><strong>Salario Neto:</strong> <span class="text-blue-600 font-bold">${formatMoney(item.netPay)}</span></p>
+                    <p><strong>Salario Bruto:</strong> ${formatMoney(item.grossPay)}</p>
+                    ${item.totalPendientesSumar > 0 ? `<p><strong>Feriados Pendientes Sumados:</strong> ${formatMoney(item.totalPendientesSumar)}</p>` : ''}
+                    <p><strong>Total Deducciones:</strong> ${formatMoney(item.totalDeducciones)}</p>
+                    <p><strong>CCSS:</strong> ${formatMoney(item.ccssDed)}</p>
+                    <p><strong>Renta:</strong> ${formatMoney(item.rentaDed)}</p>
+                    <p><strong>AsoAmazon:</strong> ${formatMoney(item.asoAmazonDed)}</p>
+                `;
+
+                changeTab('detalle-registro');
+            },
+
+            borrarRegistro(index) {
+                let history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+                history.splice(index, 1);
+                localStorage.setItem('amz_calc_history', JSON.stringify(history));
+                this.renderHistorial();
+                DashboardModule.renderDashboard();
+            },
+
+            borrarHistorial() {
+                if (confirm('¿Deseas borrar todo el historial?')) {
+                    localStorage.removeItem('amz_calc_history');
+                    this.renderHistorial();
+                    DashboardModule.renderDashboard();
+                }
+            }
+        };
+
+        const DashboardModule = {
+            renderDashboard() {
+                const history = JSON.parse(localStorage.getItem('amz_calc_history')) || [];
+                const netPayEl = document.getElementById('dash-net-pay');
+                const grossPayEl = document.getElementById('dash-gross-pay');
+                const dedEl = document.getElementById('dash-deductions');
+                const dashPendingEl = document.getElementById('dash-pending-receive');
+                const dashNextDepositEl = document.getElementById('dash-next-deposit-date');
+
+                if (history.length > 0) {
+                    const latest = history[0];
+                    netPayEl.innerText = formatMoney(latest.netPay);
+                    grossPayEl.innerText = formatMoney(latest.grossPay);
+                    dedEl.innerText = formatMoney(latest.totalDeducciones);
+                } else {
+                    netPayEl.innerText = formatMoney(0);
+                    grossPayEl.innerText = formatMoney(0);
+                    dedEl.innerText = formatMoney(0);
+                }
+
+                let pendientes = PendingPaymentsModule.obtenerPendientes();
+                let totalPendienteRecibir = pendientes.reduce((acc, curr) => acc + curr.montoPendiente, 0);
+                if (dashPendingEl) dashPendingEl.innerText = formatMoney(totalPendienteRecibir);
+
+                let hoy = new Date();
+                let ano = hoy.getFullYear();
+                let mes = hoy.getMonth();
+                let p1 = CalendarModule.obtenerFechaAjustada(ano, mes, 15);
+                let p2 = CalendarModule.obtenerFechaAjustada(ano, mes, 30);
+                let proximaFecha = p1 >= hoy ? p1 : (p2 >= hoy ? p2 : CalendarModule.obtenerFechaAjustada(ano, mes + 1, 15));
+                if (dashNextDepositEl) {
+                    dashNextDepositEl.innerText = proximaFecha.toLocaleDateString('es-CR', { weekday: 'short', day: 'numeric', month: 'short' });
+                }
+            }
+        };
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('amz_calc_settings');
+            if (savedSettings) {
+                appConfig = JSON.parse(savedSettings);
+                document.getElementById('setting-hourly-rate').value = appConfig.hourlyRate;
+                document.getElementById('setting-base-hours').value = appConfig.baseHours;
+                document.getElementById('setting-currency').value = appConfig.currency;
+                document.getElementById('setting-aso-enabled').checked = appConfig.asoEnabled;
+                document.getElementById('setting-aso-percent').value = appConfig.asoPercent;
+            }
+            document.getElementById('input-rate').value = appConfig.hourlyRate;
+            document.getElementById('input-base-hours').value = appConfig.baseHours;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('input-fecha-objetivo');
+            if (dateInput && !dateInput.value) dateInput.value = todayStr;
+
+            CalendarModule.renderCalendar();
+            FeriadosModule.inicializarSelectorFeriados();
+            HistoryModule.renderHistorial();
+            DashboardModule.renderDashboard();
+            PendingPaymentsModule.renderTarjetaInicio();
+        }
+
+        function guardarAjustes() {
+            appConfig.hourlyRate = parseFloat(document.getElementById('setting-hourly-rate').value) || 3679.49;
+            appConfig.baseHours = parseFloat(document.getElementById('setting-base-hours').value) || 120;
+            appConfig.currency = document.getElementById('setting-currency').value;
+            appConfig.asoEnabled = document.getElementById('setting-aso-enabled').checked;
+            appConfig.asoPercent = parseFloat(document.getElementById('setting-aso-percent').value) || 5;
+
+            localStorage.setItem('amz_calc_settings', JSON.stringify(appConfig));
+            document.getElementById('input-rate').value = appConfig.hourlyRate;
+            document.getElementById('input-base-hours').value = appConfig.baseHours;
+
+            alert('Ajustes aplicados correctamente.');
+            DashboardModule.renderDashboard();
+            changeTab('inicio');
+        }
+
+        function changeTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            const navButtons = {
+                inicio: document.getElementById('nav-inicio'),
+                calcular: document.getElementById('nav-calcular'),
+                historial: document.getElementById('nav-historial'),
+                ajustes: document.getElementById('nav-ajustes')
+            };
+
+            for (let key in navButtons) {
+                if (navButtons[key]) {
+                    if (key === tabId) {
+                        navButtons[key].classList.remove('text-gray-400');
+                        navButtons[key].classList.add('text-blue-600');
+                    } else {
+                        navButtons[key].classList.add('text-gray-400');
+                        navButtons[key].classList.remove('text-blue-600');
+                    }
+                }
+            }
+        }
+
+        function parseTimeToDecimal(val) {
+            if (!val) return 0;
+            val = val.trim();
+            if (val.includes(':')) {
+                const parts = val.split(':');
+                return (parseInt(parts[0]) || 0) + ((parseInt(parts[1]) || 0) / 60);
+            }
+            return parseFloat(val) || 0;
+        }
+
+        function formatMoney(amount) {
+            return appConfig.currency + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function rentaMensual(ingresoMensual) {
+            let renta = 0;
+            if (ingresoMensual > 918000) {
+                let tramo1 = Math.min(ingresoMensual, 1347000) - 918000;
+                if (tramo1 > 0) renta += tramo1 * 0.10;
+                let tramo2 = Math.min(ingresoMensual, 2364000) - 1347000;
+                if (tramo2 > 0) renta += tramo2 * 0.15;
+                let tramo3 = Math.min(ingresoMensual, 4727000) - 2364000;
+                if (tramo3 > 0) renta += tramo3 * 0.20;
+                let tramo4 = ingresoMensual - 4727000;
+                if (tramo4 > 0) renta += tramo4 * 0.25;
+            }
+            return renta;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const el = document.getElementById('device-time');
+            if (el) el.textContent = hours + ':' + minutes;
+        }
+
+        window.onload = function() {
+            loadSettings();
+            setInterval(updateClock, 1000);
+            updateClock();
+        };
+    </script>
+</body>
+</html>
